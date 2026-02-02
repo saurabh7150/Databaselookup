@@ -33,6 +33,12 @@
         <input type="text" name="mobile" required>
         <button type="submit">Check PAN</button>
     </form>
+    <!-- Today's Cars -->
+<h2>Today's Fetched Cars</h2>
+<form method="post">
+    <input type="hidden" name="action" value="today_cars">
+    <button type="submit">Show Today’s Cars</button>
+</form>
 
     <!-- Display & Download Section -->
     {% if error %}
@@ -56,6 +62,25 @@
         <pre id="pan_json">{{ pan_data | tojson(indent=2) }}</pre>
         <button onclick="downloadJSON('pan_json', 'pan_data.json')">Download PAN Data</button>
     {% endif %}
+    {% if today_cars %}
+    <h3>Today's Cars ({{ today_cars | length }})</h3>
+
+    {% for item in today_cars %}
+        <details style="margin-bottom: 10px;">
+            <summary><strong>{{ item.id_number }}</strong></summary>
+            <pre>{{ item.car_data | tojson(indent=2) }}</pre>
+        </details>
+    {% endfor %}
+
+    <button onclick="downloadJSON('today_cars_json', 'today_cars.json')">
+        Download All Today’s Cars
+    </button>
+
+    <pre id="today_cars_json" style="display:none;">
+        {{ today_cars | tojson }}
+    </pre>
+{% endif %}
+
 
     <script>
         function downloadJSON(elementId, filename) {
