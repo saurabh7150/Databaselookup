@@ -11,6 +11,7 @@ def home():
 
 @app.route('/', methods=['GET', 'POST'])
 def car_lookup():
+    today_cars = None
     car_data = None
     cibil_data = None
     pan_data = None
@@ -60,8 +61,28 @@ def car_lookup():
                     error = f"Error calling get_pan_by_mobile: {str(e)}"
             else:
                 error = "Please provide a mobile number."
+        elif action == 'today_cars':
+            try:
+                response = requests.get(f"{API_BASE}/get_today_cars")
+                if response.status_code == 200:
+                    today_cars = response.json().get("data", [])
+                    if not today_cars:
+                        error = "No car records found for today."
+                else:
+                    error = response.json().get("error")
+            except Exception as e:
+                error = f"Error calling get_today_cars: {str(e)}"
+        
 
-    return render_template('car_lookup.html', car_data=car_data, cibil_data=cibil_data, pan_data=pan_data, error=error)
+    return render_template(
+    'car_lookup.html',
+    car_data=car_data,
+    cibil_data=cibil_data,
+    pan_data=pan_data,
+    today_cars=today_cars,
+    error=error
+)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
